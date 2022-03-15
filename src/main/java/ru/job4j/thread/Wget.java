@@ -45,10 +45,28 @@ public class Wget implements Runnable {
         }
     }
 
+    public static void validate(String[] args) {
+        if (args.length < 3) {
+            throw new IllegalArgumentException("""
+                    Invalid arguments, please correct parameters: \s
+                     args[0] -> URL
+                     args[1] -> speed in Bytes/s
+                     args[2] -> name of file / path to file"""
+            );
+        }
+    }
+
     public static void main(String[] args) throws InterruptedException {
+        /*
         String url = "https://proof.ovh.net/files/10Mb.dat";
-        String file = "C:/projects/job4j_threads";
-        int speed = 1024 * 1024; /*ограничивать скорость до 1 мегабайта в секунду*/
+        String file = "C:/projects/job4j_threads/10Mb.dat";
+        int speed = 1024 * 1024; ограничивать скорость до 1 мегабайта в секунду
+        */
+
+        validate(args);
+        String url = args[0];
+        int speed = Integer.parseInt(args[1]);
+        String file = args[2];
         Thread wget = new Thread(new Wget(url, speed, file));
         wget.start();
         wget.join();
