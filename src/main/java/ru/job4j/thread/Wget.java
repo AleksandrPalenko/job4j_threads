@@ -23,13 +23,19 @@ public class Wget implements Runnable {
              FileOutputStream out = new FileOutputStream(file)) {
             byte[] dataBuffer = new byte[1024];
             int bytesRead;
-            long time = System.currentTimeMillis();
+            long bytesWrite = 0;
+            long timeStart = System.currentTimeMillis();
             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
                 out.write(dataBuffer, 0, bytesRead); /*bytesRead - Это кол-во прочтенных за раз байт*/
-                if (speed < 1024) {
-                    Thread.sleep(1000);
+                bytesWrite += bytesRead;
+                if (bytesWrite >= speed) {
+                    long deltaTime = System.currentTimeMillis() - timeStart;
+                    if (deltaTime < 1000) {
+                        Thread.sleep(1000 - deltaTime);
+                    }
+                    timeStart = System.currentTimeMillis();
+                    bytesWrite = 0;
                 }
-                System.out.println(" " + time++);
             }
 
         } catch (IOException | InterruptedException e) {
@@ -39,9 +45,9 @@ public class Wget implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        String url = args[0];
-        String file = args[1];
-        int speed = Integer.parseInt(args[1]);
+        String url = "https://proof.ovh.net/files/10Mb.dat";
+        String file = "C:/projects/job4j_threads";
+        int speed = 1024 * 1024; /*ограничивать скорость до 1 мегабайта в секунду*/
         Thread wget = new Thread(new Wget(url, speed, file));
         wget.start();
         wget.join();
