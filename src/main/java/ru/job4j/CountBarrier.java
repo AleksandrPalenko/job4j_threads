@@ -15,8 +15,8 @@ public class CountBarrier {
 
     public void count() {
         synchronized (monitor) {
-            monitor.notifyAll();
             count++;
+            monitor.notifyAll();
         }
     }
 
