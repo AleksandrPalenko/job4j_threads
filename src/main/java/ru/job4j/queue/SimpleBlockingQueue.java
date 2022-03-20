@@ -13,7 +13,6 @@ public class SimpleBlockingQueue<T> {
      * @param Consumer извлекает данные из очереди
      */
 
-    //private final SimpleBlockingQueue<Integer> monitor = new SimpleBlockingQueue<>();
     @GuardedBy("monitor")
     private final int limit;
     private final Object monitor = this;

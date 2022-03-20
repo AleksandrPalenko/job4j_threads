@@ -9,7 +9,7 @@ public class SimpleBlockingQueueTest {
     @Ignore
     @Test
     public void test() throws InterruptedException {
-        SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<Integer>(10);
+        SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(10);
         final Thread producer = new Thread(
                 () -> {
                     queue.offer(5);
