@@ -13,7 +13,7 @@ public class SimpleBlockingQueue<T> {
      * @param Consumer извлекает данные из очереди
      */
 
-    private final int limit;
+    private int limit;
 
     public SimpleBlockingQueue(int limit) {
         this.limit = limit;
@@ -21,6 +21,10 @@ public class SimpleBlockingQueue<T> {
 
     @GuardedBy("this")
     private final Queue<T> queue = new LinkedList<>();
+
+    public SimpleBlockingQueue() {
+
+    }
 
     public synchronized void offer(T value) throws InterruptedException {
         if (this.queue.size() > this.limit) {
@@ -42,4 +46,5 @@ public class SimpleBlockingQueue<T> {
         notifyAll();
         return type;
     }
+
 }
