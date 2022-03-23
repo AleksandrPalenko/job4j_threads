@@ -18,7 +18,8 @@ public class ParallelSearch {
                     }
                 }
         );
-        final Thread producer = new Thread(
+        consumer.start();
+        new Thread(
                 () -> {
                     for (int index = 0; index != 3; index++) {
                         try {
@@ -26,15 +27,12 @@ public class ParallelSearch {
                             Thread.sleep(500);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
-                            Thread.currentThread().interrupt();
                         }
                     }
                 }
 
-        );
-        producer.start();
-        consumer.start();
+        ).start();
+        consumer.interrupt();
         consumer.join();
-        producer.join();
     }
 }
