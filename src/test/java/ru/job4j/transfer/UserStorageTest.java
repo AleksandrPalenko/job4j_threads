@@ -27,8 +27,8 @@ public class UserStorageTest {
     @Test
     public void userRemove() {
         Storage storage =  new UserStorage();
-        User user = new User();
-        User user2 = new User();
+        User user = new User(1, 100);
+        User user2 = new User(2, 50);
         assertTrue(storage.add(user));
         assertTrue(storage.delete(user));
         assertFalse(storage.delete(user2));
