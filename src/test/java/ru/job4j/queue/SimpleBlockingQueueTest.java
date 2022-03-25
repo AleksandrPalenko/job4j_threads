@@ -9,7 +9,6 @@ import java.util.stream.IntStream;
 
 import static org.hamcrest.core.Is.is;
 
-
 public class SimpleBlockingQueueTest {
 
     @Test
