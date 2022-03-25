@@ -1,7 +1,6 @@
 package ru.job4j.queue;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -28,7 +27,6 @@ public class SimpleBlockingQueueTest {
                     });
                 }
         );
-        producer.start();
         Thread anotherProducer = new Thread(
                 () -> {
                     IntStream.range(5, 10).forEach(s -> {
@@ -40,7 +38,6 @@ public class SimpleBlockingQueueTest {
                     });
                 }
         );
-        anotherProducer.start();
         Thread consumer = new Thread(
                 () -> {
                     while (!queue.isEmpty() || !Thread.currentThread().isInterrupted()) {
@@ -53,6 +50,8 @@ public class SimpleBlockingQueueTest {
                     }
                 }
         );
+        producer.start();
+        anotherProducer.start();
         consumer.start();
         producer.join();
         anotherProducer.interrupt();
