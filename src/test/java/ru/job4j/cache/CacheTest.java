@@ -21,8 +21,8 @@ public class CacheTest {
 
     @Test
     public void whenUpdate() {
-        Cache cache =  new Cache();
-        Base base =  new Base(1, 1);
+        Cache cache = new Cache();
+        Base base = new Base(1, 1);
         Base base1 = new Base(1, 1);
         cache.add(base);
         cache.add(base1);
@@ -52,12 +52,21 @@ public class CacheTest {
 
     @Test
     public void whenRemove() {
-        Cache cache =  new Cache();
-        Base base =  new Base(1, 1);
+        Cache cache = new Cache();
+        Base base = new Base(1, 1);
         Base base1 = new Base(1, 1);
         cache.add(base);
         cache.add(base1);
         cache.delete(base1);
         assertThat(cache.getSize(), is(1));
+    }
+
+    @Test(expected = Exception.class)
+    public void whenIsGenerateException() {
+        Cache cache = new Cache();
+        Base base = new Base(1, 1);
+        Base base1 = new Base(1, 2);
+        assertTrue(cache.add(base));
+        assertTrue(cache.update(base1));
     }
 }
