@@ -5,41 +5,55 @@ import ru.job4j.queue.SimpleBlockingQueue;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ThreadPool implements Runnable {
+public class ThreadPool {
     private final List<Thread> threads = new LinkedList<>();
-    private final SimpleBlockingQueue<Runnable> tasks = new SimpleBlockingQueue<>(8);
+    private final SimpleBlockingQueue<Runnable> tasks = new SimpleBlockingQueue<>();
+
+    public ThreadPool() {
+        int limit = Runtime.getRuntime().availableProcessors();
+        threads.add(new Thread(
+                () -> {
+                    /*проверяем, что очередь не пустая или нить не выключили*/
+                    while (!tasks.isEmpty() || !Thread.currentThread().isInterrupted()) {
+                        try {
+                            for (int i = 0; i < limit; i++) {
+                                tasks.poll().run();
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }));
+    }
 
     public void work(Runnable job) throws InterruptedException {
-        new Thread(
-                () -> {
-            while (!tasks.isEmpty() || !Thread.currentThread().isInterrupted()) {
-                try {
-                    for (int i = 0; i < threads.size(); i++) {
-                        tasks.offer(job);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
-    public synchronized void shutdown() {
-        tasks.notifyAll();
-    }
-
-    @Override
-    public void run() {
-        while (!tasks.isEmpty() || !Thread.currentThread().isInterrupted()) {
-            try {
-                threads.add((Thread) tasks.poll());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        while (!tasks.isEmpty()) {
+            tasks.offer(job);
         }
     }
 
-    public static int getSize() {
-        return Runtime.getRuntime().availableProcessors();
+    public synchronized void shutdown() {
+        new Thread(
+                () -> {
+                    for (Thread thread:threads) {
+                        thread.interrupt();
+                    }
+                }
+        );
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+       /*
+        ThreadPool threadPool =  new ThreadPool();
+        int limit = Runtime.getRuntime().availableProcessors();
+        for (Runnable i; i < limit;) {
+            threadPool.work(i);
+        }
+        Thread.sleep(2000);
+        threadPool.shutdown();
+        System.out.println(threadPool);
+
+        */
     }
 }
