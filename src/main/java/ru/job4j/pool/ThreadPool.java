@@ -11,49 +11,40 @@ public class ThreadPool {
 
     public ThreadPool() {
         int limit = Runtime.getRuntime().availableProcessors();
-        threads.add(new Thread(
+        Thread progress = new Thread(
                 () -> {
-                    /*проверяем, что очередь не пустая или нить не выключили*/
                     while (!tasks.isEmpty() || !Thread.currentThread().isInterrupted()) {
                         try {
                             for (int i = 0; i < limit; i++) {
                                 tasks.poll().run();
                             }
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
                             Thread.currentThread().interrupt();
                         }
                     }
-                }));
+                });
+        progress.start();
+        threads.add(progress);
     }
 
     public void work(Runnable job) throws InterruptedException {
-        while (!tasks.isEmpty()) {
-            tasks.offer(job);
-        }
+        tasks.offer(job);
     }
 
     public synchronized void shutdown() {
-        new Thread(
-                () -> {
-                    for (Thread thread:threads) {
-                        thread.interrupt();
-                    }
-                }
-        );
+        for (Thread thread : threads) {
+            thread.interrupt();
+        }
     }
 
     public static void main(String[] args) throws InterruptedException {
-       /*
-        ThreadPool threadPool =  new ThreadPool();
-        int limit = Runtime.getRuntime().availableProcessors();
-        for (Runnable i; i < limit;) {
-            threadPool.work(i);
+        ThreadPool threadPool = new ThreadPool();
+        Runnable run = () -> System.out.println(Thread.currentThread().getName());
+        for (int i = 0; i < 8; i++) {
+            threadPool.work(run);
+            System.out.println(i);
         }
         Thread.sleep(2000);
         threadPool.shutdown();
-        System.out.println(threadPool);
-
-        */
     }
 }
