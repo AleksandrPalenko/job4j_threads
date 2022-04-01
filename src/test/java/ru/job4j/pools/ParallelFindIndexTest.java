@@ -39,4 +39,5 @@ public class ParallelFindIndexTest {
         int rsl = ParallelFindIndex.findIndex(obj, 50);
         assertThat(rsl, is(49));
     }
+
 }
