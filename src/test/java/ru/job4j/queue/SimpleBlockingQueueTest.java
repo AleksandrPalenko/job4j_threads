@@ -7,13 +7,13 @@ import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.IntStream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public class SimpleBlockingQueueTest {
 
     @Test
     public void test() throws InterruptedException {
-        final CopyOnWriteArrayList<Integer> buffer = new CopyOnWriteArrayList<>();
         final SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(7);
         Thread producer = new Thread(
                 () -> {
@@ -21,43 +21,71 @@ public class SimpleBlockingQueueTest {
                         try {
                             queue.offer(s);
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }
-        );
-        Thread anotherProducer = new Thread(
-                () -> {
-                    IntStream.range(5, 10).forEach(s -> {
-                        try {
-                            queue.offer(s);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            Thread.currentThread().interrupt();
                         }
                     });
                 }
         );
         Thread consumer = new Thread(
                 () -> {
-                    while (!queue.isEmpty() || !Thread.currentThread().isInterrupted()) {
-                        try {
-                            buffer.add(queue.poll());
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                            Thread.currentThread().interrupt();
-                        }
+                    try {
+                        queue.poll();
+                        queue.poll();
+                        queue.poll();
+                        queue.poll();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                     }
                 }
         );
         producer.start();
-        anotherProducer.start();
         consumer.start();
         producer.join();
-        anotherProducer.interrupt();
-        anotherProducer.join();
         consumer.interrupt();
         consumer.join();
-        Assert.assertThat(10, is(buffer.size()));
+        Assert.assertThat(4, is(queue.poll()));
+    }
+
+    @Test
+    public void whenTwoConsumersAreWorking() throws InterruptedException {
+        final SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(8);
+        Thread producer = new Thread(() -> {
+                    for (int i = 0; i < 8; i++) {
+                        try {
+                            queue.offer(i);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                });
+        Thread consumer =  new Thread(
+                () -> {
+                    for (int i = 0; i < 3; i++) {
+                        try {
+                            queue.poll();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                });
+        Thread anotherConsumer =  new Thread(() -> {
+                    for (int i = 0; i < 3; i++) {
+                        try {
+                            queue.poll();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                });
+        producer.start();
+        consumer.start();
+        anotherConsumer.start();
+        producer.join();
+        consumer.interrupt();
+        consumer.join();
+        anotherConsumer.interrupt();
+        anotherConsumer.join();
+        assertThat(queue.poll(), is(6));
     }
 
     @Test
