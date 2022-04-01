@@ -4,25 +4,26 @@ package ru.job4j.pools;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
-public class ParallelFindIndex extends RecursiveTask<Integer> {
+public class ParallelFindIndex<T> extends RecursiveTask<Integer> {
 
-    private final String[] array;
-    private final String obj;
+    private final T[] array;
+    private final T obj;
     private final int from;
     private final int to;
 
-    public ParallelFindIndex(String[] array, String obj, int from, int to) {
+    public ParallelFindIndex(T[] array, T obj, int from, int to) {
         this.array = array;
         this.obj = obj;
         this.from = from;
         this.to = to;
     }
 
-    public static int find(String[] object, String obj, int from, int to) {
+    public static <T> int find(T[] array, T obj, int from, int to) {
         int idx = -1;
-        for (int i = from; from <= to; i++) {
-            if (obj.equals(object[i])) {
+        for (int i = from; i <= to; i++) {
+            if (obj.equals(array[i])) {
                 idx = i;
+                break;
             }
         }
         return idx;
@@ -30,23 +31,22 @@ public class ParallelFindIndex extends RecursiveTask<Integer> {
 
     @Override
     protected Integer compute() {
-        int rsl = 0;
-        if (array.length <= 10) {
+        if ((from - to) <= 10) {
             return find(array, obj, from, to);
         }
         int mid = (from + to) / 2;
-        ParallelFindIndex leftFind = new ParallelFindIndex(array, obj, from, to);
-        ParallelFindIndex rightFind = new ParallelFindIndex(array, obj, mid + 1, to);
+        ParallelFindIndex<T> leftFind = new ParallelFindIndex<>(array, obj, from, to);
+        ParallelFindIndex<T> rightFind = new ParallelFindIndex<>(array, obj, mid + 1, to);
         leftFind.fork();
         rightFind.fork();
-        Integer left = leftFind.join();
-        Integer right = rightFind.join();
-        return rsl;
+        Integer left = (Integer) leftFind.join();
+        Integer right = (Integer) rightFind.join();
+        return Math.max(left, right);
     }
 
-    public static int findIndex(String[] object, String val) {
+    public static <T> int findIndex(T[] array, T value) {
         ForkJoinPool forkJoinPool = new ForkJoinPool();
-        return forkJoinPool.invoke(new ParallelFindIndex(object, val, 0, object.length - 1));
+        return forkJoinPool.invoke(new ParallelFindIndex<>(array, value, 0, array.length - 1));
     }
 
 }
