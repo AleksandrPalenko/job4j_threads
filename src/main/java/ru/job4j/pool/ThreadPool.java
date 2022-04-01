@@ -15,7 +15,7 @@ public class ThreadPool {
                 () -> {
                     while (!tasks.isEmpty() || !Thread.currentThread().isInterrupted()) {
                         try {
-                            for (int i = 0; i < limit; i++) {
+                            for (int i = 0; i <= limit; i++) {
                                 tasks.poll().run();
                             }
                         } catch (InterruptedException e) {
