@@ -18,7 +18,7 @@ public class ParallelFindIndex<T> extends RecursiveTask<Integer> {
         this.to = to;
     }
 
-    public static <T> int find(T[] array, T obj, int from, int to) {
+    public <T> int find() {
         int idx = -1;
         for (int i = from; i <= to; i++) {
             if (obj.equals(array[i])) {
@@ -32,7 +32,7 @@ public class ParallelFindIndex<T> extends RecursiveTask<Integer> {
     @Override
     protected Integer compute() {
         if ((from - to) <= 10) {
-            return find(array, obj, from, to);
+            return find();
         }
         int mid = (from + to) / 2;
         ParallelFindIndex<T> leftFind = new ParallelFindIndex<>(array, obj, from, to);
