@@ -14,17 +14,18 @@ public class ThreadPool {
         Thread progress = new Thread(
                 () -> {
                     while (!tasks.isEmpty() || !Thread.currentThread().isInterrupted()) {
-                        try {
-                            for (int i = 0; i <= limit; i++) {
+                        for (int i = 0; i <= limit; i++) {
+                            try {
                                 tasks.poll().run();
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
                             }
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
                         }
                     }
                 });
         progress.start();
         threads.add(progress);
+
     }
 
     public void work(Runnable job) throws InterruptedException {
