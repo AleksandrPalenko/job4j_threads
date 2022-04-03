@@ -11,21 +11,20 @@ public class ThreadPool {
 
     public ThreadPool() {
         int limit = Runtime.getRuntime().availableProcessors();
-        Thread progress = new Thread(
-                () -> {
-                    while (!tasks.isEmpty() || !Thread.currentThread().isInterrupted()) {
-                        for (int i = 0; i <= limit; i++) {
+        for (int i = 0; i <= limit; i++) {
+            Thread progress = new Thread(
+                    () -> {
+                        while (!Thread.currentThread().isInterrupted()) {
                             try {
                                 tasks.poll().run();
                             } catch (InterruptedException e) {
                                 Thread.currentThread().interrupt();
                             }
                         }
-                    }
-                });
-        progress.start();
-        threads.add(progress);
-
+                    });
+            progress.start();
+            threads.add(progress);
+        }
     }
 
     public void work(Runnable job) throws InterruptedException {
@@ -41,7 +40,7 @@ public class ThreadPool {
     public static void main(String[] args) throws InterruptedException {
         ThreadPool threadPool = new ThreadPool();
         Runnable run = () -> System.out.println(Thread.currentThread().getName());
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i <= 8; i++) {
             threadPool.work(run);
             System.out.println(i);
         }
