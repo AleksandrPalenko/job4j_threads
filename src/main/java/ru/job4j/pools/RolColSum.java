@@ -2,6 +2,10 @@ package ru.job4j.pools;
 
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class RolColSum {
     public static class Sums {
@@ -37,29 +41,43 @@ public class RolColSum {
         Sums[] sum = new Sums[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix.length; j++) {
-                sum[i].setRowSum(countSum(matrix, i));
-                sum[j].setColSum(countSum(matrix, j));
-                sum = new Sums[i];
+                sum[i] = countSum(matrix, i);
+                sum[j] = countSum(matrix, j);
+               // sum = new Sums[i];
             }
+
         }
         return sum;
     }
 
-    private static int countSum(int[][] matrix, int idx) {
-        int str = 0;
-        for (int i = 0; i < matrix[idx].length; i++) {
-            str += matrix[idx][i];
+    private static Sums countSum(int[][] matrix, int idx) {
+        int countRow = 0;
+        int countCol = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            countRow += matrix[idx][i];
+            countCol += matrix[i][idx];
         }
-        return str;
+        return new Sums(countRow, countCol);
     }
 
-    public static Sums[] asyncSum(int[][] matrix) {
+    public static Sums[] asyncSum(int[][] matrix) throws ExecutionException, InterruptedException {
         Sums[] futureSum = new Sums[matrix.length];
+        Map<Integer, CompletableFuture<Sums>> futures = new HashMap<>();
+        for (int i = 0; i < matrix.length; i++) {
+            futures.put(i, getTask(matrix, i));
+        }
+        for (Integer key : futures.keySet()) {
+            futureSum[key] = futures.get(key).get();
+        }
         return futureSum;
 
     }
 
-    public static void main(String[] args) {
+    public static CompletableFuture<Sums> getTask(int[][] matrix, int idx) {
+        return CompletableFuture.supplyAsync(() -> countSum(matrix, idx));
+    }
+
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         int[][] sums = {
                 {1, 2, 3},
                 {2, 3, 4},
