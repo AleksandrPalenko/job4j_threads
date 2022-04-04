@@ -1,5 +1,6 @@
 package ru.job4j.pools;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -8,6 +9,7 @@ import static org.hamcrest.core.Is.is;
 
 public class RolColSumTest {
 
+    @Ignore
     @Test
     public void whenSumCountTest() {
         int[][] sum = {
