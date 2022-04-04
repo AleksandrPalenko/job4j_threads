@@ -13,6 +13,9 @@ public class RolColSum {
             this.colSum = colSum;
         }
 
+        public Sums() {
+        }
+
         public int getRowSum() {
             return rowSum;
         }
@@ -31,24 +34,27 @@ public class RolColSum {
     }
 
     public static Sums[] sum(int[][] matrix) {
-        int countRow = 0;
-        int countCol = 0;
         Sums[] sum = new Sums[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix.length; j++) {
-                countRow += matrix[i][j];
-                countCol += matrix[j][i];
+                sum[i].setRowSum(countSum(matrix, i));
+                sum[j].setColSum(countSum(matrix, j));
+                sum = new Sums[i];
             }
-            sum[i] = new Sums(countRow, countCol);
-            countRow = 0;
-            countCol = 0;
         }
         return sum;
     }
 
+    private static int countSum(int[][] matrix, int idx) {
+        int str = 0;
+        for (int i = 0; i < matrix[idx].length; i++) {
+            str += matrix[idx][i];
+        }
+        return str;
+    }
+
     public static Sums[] asyncSum(int[][] matrix) {
         Sums[] futureSum = new Sums[matrix.length];
-
         return futureSum;
 
     }
@@ -58,6 +64,6 @@ public class RolColSum {
                 {1, 2, 3},
                 {2, 3, 4},
                 {5, 6, 7}};
-        System.out.println(Arrays.deepToString(sum(sums)));
+        System.out.println(Arrays.toString(asyncSum(sums)));
     }
 }

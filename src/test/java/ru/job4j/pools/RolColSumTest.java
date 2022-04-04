@@ -23,4 +23,5 @@ public class RolColSumTest {
         RolColSum.Sums[] sums = RolColSum.sum(sum);
         assertThat(sums, is(expected));
     }
+
 }
