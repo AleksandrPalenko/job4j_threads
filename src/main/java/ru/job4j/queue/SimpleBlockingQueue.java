@@ -23,11 +23,11 @@ public class SimpleBlockingQueue<T> {
     private final Queue<T> queue = new LinkedList<>();
 
     public SimpleBlockingQueue() {
-
+        this.limit = Integer.MAX_VALUE;
     }
 
     public synchronized void offer(T value) throws InterruptedException {
-        if (this.queue.size() > this.limit) {
+        while (this.queue.size() > this.limit) {
             wait();
         }
         queue.add(value);
@@ -39,7 +39,7 @@ public class SimpleBlockingQueue<T> {
      * Если в коллекции объектов нет, то нужно перевести текущую нить в состояние ожидания
      */
     public synchronized T poll() throws InterruptedException {
-        if (queue.isEmpty()) {
+        while (queue.isEmpty()) {
             wait();
         }
         T type = queue.poll();
