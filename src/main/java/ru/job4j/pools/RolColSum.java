@@ -43,7 +43,6 @@ public class RolColSum {
             for (int j = 0; j < matrix.length; j++) {
                 sum[i] = countSum(matrix, i);
                 sum[j] = countSum(matrix, j);
-               // sum = new Sums[i];
             }
 
         }
