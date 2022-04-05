@@ -8,4 +8,4 @@ job4j_threads
 * Non Blocking Algorithm: CAS - операции.
 * Пулы: ThreadSafe Singleton, ForkJoinPool, CompletableFuture.
 
-**Создание ветки из idea**
+**Создание ветки из idea** **with new changes**
