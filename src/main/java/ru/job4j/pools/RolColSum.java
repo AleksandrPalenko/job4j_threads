@@ -1,7 +1,5 @@
 package ru.job4j.pools;
 
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -76,11 +74,4 @@ public class RolColSum {
         return CompletableFuture.supplyAsync(() -> countSum(matrix, idx));
     }
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        int[][] sums = {
-                {1, 2, 3},
-                {2, 3, 4},
-                {5, 6, 7}};
-        System.out.println(Arrays.toString(asyncSum(sums)));
-    }
 }
