@@ -9,4 +9,4 @@ job4j_threads
 * Пулы: ThreadSafe Singleton, ForkJoinPool, CompletableFuture.
 
 
-***В курсе производилась работа с ветками git.***
+***В курсе производилась работа с ветками git.*** 
